@@ -357,7 +357,7 @@ class window(QtWidgets.QMainWindow):
                     ui.tableWidget.item(i, 1).setFlags(Qt.ItemIsEnabled)
                 ui.radioButton_PD.setDisabled(True)
                 ui.radioButton_RD.setEnabled(True)
-            else: # iu.radioButton_RD.isChecked() == False:
+            else:
                 keys = list(data["Рабочая документация"].keys())
                 for i in range(len(keys)):
                     ui.tableWidget.insertRow(ui.tableWidget.rowCount())
