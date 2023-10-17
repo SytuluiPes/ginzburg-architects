@@ -246,7 +246,7 @@ class window(QtWidgets.QMainWindow):
                 else:
                     doc.save(f"{path}/{table[ii * 2]} ({ii + 1}).docx")
                 flag_folder = False
-                self.setWindowTitle(f"Генератор документов - Генерация {100 / rowCount * (ii + 1)} %")
+                self.setWindowTitle(f"Генератор документов - Генерация {round(100 / rowCount * (ii + 1))} %")
             self.setWindowTitle("Генератор документов - Генерация завершена")
             self.save(False)
             info("Файлы успешно сгенерированы!")
@@ -255,31 +255,30 @@ class window(QtWidgets.QMainWindow):
         with open("same_config.json", "r") as f:
             data = load(f)
         print(self.ui.tableWidget.columnCount())
-        for i in range(10):
-            if self.ui.tableWidget.columnCount() == 6:
-                rowCount = self.ui.tableWidget.rowCount()
-                self.ui.tableWidget.insertRow(rowCount)
-                combo_box1 = custom_combo_box()
-                combo_box1.addItems(data["Раздел"])
-                self.ui.tableWidget.setCellWidget(rowCount, 0, combo_box1)
+        if self.ui.tableWidget.columnCount() == 6:
+            rowCount = self.ui.tableWidget.rowCount()
+            self.ui.tableWidget.insertRow(rowCount)
+            combo_box1 = custom_combo_box()
+            combo_box1.addItems(data["Раздел"])
+            self.ui.tableWidget.setCellWidget(rowCount, 0, combo_box1)
 
-                combo_box2 = custom_combo_box()
-                combo_box2.setEditable(True)
-                combo_box2.addItems(data["Номер части"])
-                self.ui.tableWidget.setCellWidget(rowCount, 1, combo_box2)
+            combo_box2 = custom_combo_box()
+            combo_box2.setEditable(True)
+            combo_box2.addItems(data["Номер части"])
+            self.ui.tableWidget.setCellWidget(rowCount, 1, combo_box2)
 
-                combo_box3 = custom_combo_box()
-                combo_box3.setEditable(True)
-                combo_box3.addItems(data["Номер книги"])
-                self.ui.tableWidget.setCellWidget(rowCount, 2, combo_box3)
+            combo_box3 = custom_combo_box()
+            combo_box3.setEditable(True)
+            combo_box3.addItems(data["Номер книги"])
+            self.ui.tableWidget.setCellWidget(rowCount, 2, combo_box3)
 
-                combo_box4 = custom_combo_box()
-                combo_box4.setEditable(True)
-                combo_box4.addItems(data["Название части"])
-                self.ui.tableWidget.setCellWidget(rowCount, 3, combo_box4)
-            else:
-                rowCount = self.ui.tableWidget.rowCount()
-                self.ui.tableWidget.insertRow(rowCount)
+            combo_box4 = custom_combo_box()
+            combo_box4.setEditable(True)
+            combo_box4.addItems(data["Название части"])
+            self.ui.tableWidget.setCellWidget(rowCount, 3, combo_box4)
+        else:
+            rowCount = self.ui.tableWidget.rowCount()
+            self.ui.tableWidget.insertRow(rowCount)
     def del_row(self):
         rowCount = self.ui.tableWidget.rowCount()
         self.ui.tableWidget.removeRow(rowCount - 1)
