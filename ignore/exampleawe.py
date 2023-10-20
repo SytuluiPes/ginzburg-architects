@@ -69,57 +69,97 @@ from time import time
 #                                                                            "table" : "TABLE"}]}
 # new_json = json.dumps(data, indent=2)
 # print(new_json)
-with open("saves.json", "r", encoding="utf-8") as f:
-    data = json.load(f)
-data_save = str(datetime.fromtimestamp(time()))
-data["Рабочая документация"]["project4"] = \
-    {"Сравнить все курсы по цене, рейтингу и отзывам в одном месте":
-    {
-                "table": "table",
-                "projectList": "projectList",
-                "workerList": "workerList",
-                "data_save" : data_save[0:19]
-    }
-}
-# print(data)
-# # data['Проектная документация'].pop('')
-# print(list(data["Рабочая документация"].keys()))
-print(data["Проектная документация"]["Добрый вечер, поздравляю с 10 летием на рынке ПО"]['workerList'][0])
-with open('config.json', 'r') as f:
-    jobs = json.load(f)
-print(jobs.keys())
-# with open("saves.json", "w", encoding="utf-8") as f:
-#     json.dump(data, f, indent=2)
-# with open("saves.json", "w") as f:
-#     json.dump(data, f, indent=2)
+# with open("saves.json", "r", encoding="utf-8") as f:
+#     data = json.load(f)
+# data_save = str(datetime.fromtimestamp(time()))
+# data["Рабочая документация"]["project4"] = \
+#     {"Сравнить все курсы по цене, рейтингу и отзывам в одном месте":
+#     {
+#                 "table": "table",
+#                 "projectList": "projectList",
+#                 "workerList": "workerList",
+#                 "data_save" : data_save[0:19]
+#     }
+# }
+# # print(data)
+# # # data['Проектная документация'].pop('')
+# # print(list(data["Рабочая документация"].keys()))
+# print(data["Проектная документация"]["Добрый вечер, поздравляю с 10 летием на рынке ПО"]['workerList'][0])
+# with open('config.json', 'r') as f:
+#     jobs = json.load(f)
+# print(jobs.keys())
+# # with open("saves.json", "w", encoding="utf-8") as f:
+# #     json.dump(data, f, indent=2)
+# # with open("saves.json", "w") as f:
+# #     json.dump(data, f, indent=2)
+#
+# def loadTablePD(self):
+#     self.ui.radioButton_PD.setDisabled(True)
+#     self.ui.radioButton_RD.setEnabled(True)
+#     self.ui.tableWidget.setRowCount(0)
+#     self.ui.tableWidget.setColumnCount(6)
+#     self.ui.tableWidget.setHorizontalHeaderLabels(("Раздел", "Номер части",
+#                                                    "Номер книги",
+#                                                    "Название части", "Здание / Секция",
+#                                                    "Обозначение"))
+#     self.ui.tableWidget.resizeColumnsToContents()
+#     self.ui.tableWidget.horizontalHeader().setSectionResizeMode(QHeaderView.Interactive)
+#     self.ui.tableWidget.horizontalHeader().setStretchLastSection(True)
+#     self.ui.tableWidget.setColumnWidth(0, 250)
+#     self.ui.tableWidget.setColumnWidth(3, 250)
+#
+#
+# def loadTableRD(self):
+#     self.ui.radioButton_RD.setDisabled(True)
+#     self.ui.radioButton_PD.setEnabled(True)
+#     self.ui.tableWidget.setRowCount(0)
+#     self.ui.tableWidget.setColumnCount(2)
+#     self.ui.tableWidget.setHorizontalHeaderLabels(("Название раздела", "Обозначение"))
+#     self.ui.tableWidget.resizeRowsToContents()
+#     self.ui.tableWidget.resizeColumnsToContents()
+#     self.ui.tableWidget.horizontalHeader().setSectionResizeMode(QHeaderView.Interactive)
+#     self.ui.tableWidget.horizontalHeader().setStretchLastSection(True)
+#     self.ui.tableWidget.setColumnWidth(0, 700)
+import re
+from docx import Document
 
-def loadTablePD(self):
-    self.ui.radioButton_PD.setDisabled(True)
-    self.ui.radioButton_RD.setEnabled(True)
-    self.ui.tableWidget.setRowCount(0)
-    self.ui.tableWidget.setColumnCount(6)
-    self.ui.tableWidget.setHorizontalHeaderLabels(("Раздел", "Номер части",
-                                                   "Номер книги",
-                                                   "Название части", "Здание / Секция",
-                                                   "Обозначение"))
-    self.ui.tableWidget.resizeColumnsToContents()
-    self.ui.tableWidget.horizontalHeader().setSectionResizeMode(QHeaderView.Interactive)
-    self.ui.tableWidget.horizontalHeader().setStretchLastSection(True)
-    self.ui.tableWidget.setColumnWidth(0, 250)
-    self.ui.tableWidget.setColumnWidth(3, 250)
+document = Document("exam.docx")
 
-
-def loadTableRD(self):
-    self.ui.radioButton_RD.setDisabled(True)
-    self.ui.radioButton_PD.setEnabled(True)
-    self.ui.tableWidget.setRowCount(0)
-    self.ui.tableWidget.setColumnCount(2)
-    self.ui.tableWidget.setHorizontalHeaderLabels(("Название раздела", "Обозначение"))
-    self.ui.tableWidget.resizeRowsToContents()
-    self.ui.tableWidget.resizeColumnsToContents()
-    self.ui.tableWidget.horizontalHeader().setSectionResizeMode(QHeaderView.Interactive)
-    self.ui.tableWidget.horizontalHeader().setStretchLastSection(True)
-    self.ui.tableWidget.setColumnWidth(0, 700)
+# Регулярка для поиска последовательностей пробелов: от двух подряд и более
+multi_space_pattern = re.compile(r' ')
+for table in document.tables:
+    for row in table.rows:
+        list_cycle = []
+        for i in row.cells:
+            name = multi_space_pattern.sub(' ', i.text.strip())
+            list_cycle.append(name)
+        if list_cycle[0] != list_cycle[1]:
+            print(type(list_cycle[0]))
+            print(type(list_cycle[1]))
+            for i in range(len(list_cycle)):
+                print('{}'.format(list_cycle[i]))
 
 
 
+# import re
+# from docx import Document
+#
+# document = Document("Обеденное меню 777.docx")
+#
+# # Регулярка для поиска последовательностей пробелов: от двух подряд и более
+# multi_space_pattern = re.compile(r'\s{2,}')
+#
+# for table in document.tables:
+#     for row in table.rows:
+#         name, weight, price = [multi_space_pattern.sub(' ', i.text.strip()) for i in row.cells]
+#
+#         if name == weight == price or (not weight or not price):
+#             print()
+#             name = name.title()
+#             print(name)
+#             continue
+#
+#         print('{} {} {}'.format(name, weight, price))
+#
+#     # Таблицы в меню дублируются
+#     break
