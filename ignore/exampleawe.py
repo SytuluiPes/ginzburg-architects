@@ -56,11 +56,10 @@
 # #     window = Example()
 # #
 # #     sys.exit(App.exec())
-import json
-import datetime
-from datetime import datetime
-from time import time
-
+# import json
+# import datetime
+# from datetime import datetime
+# from time import time
 # str_json = """{"Проектная документация" : {},
 #                "Рабочая документация" : {}}"""
 # data = json.loads(str_json)
@@ -124,42 +123,38 @@ import re
 from docx import Document
 
 document = Document("exam.docx")
-
-# Регулярка для поиска последовательностей пробелов: от двух подряд и более
+matrix = []
 multi_space_pattern = re.compile(r' ')
 for table in document.tables:
     for row in table.rows:
         list_cycle = []
+        string = []
         for i in row.cells:
             name = multi_space_pattern.sub(' ', i.text.strip())
             list_cycle.append(name)
-        if list_cycle[0] != list_cycle[1]:
-            print(type(list_cycle[0]))
-            print(type(list_cycle[1]))
-            for i in range(len(list_cycle)):
-                print('{}'.format(list_cycle[i]))
+        if re.match("\d",list_cycle[0]): # 5.1.3
+            nums = re.split("\.", list_cycle[0], maxsplit=3) # ['1', '1']
+            if int(nums[0]) not in [5, 13]:
+                if len(nums) >= 1:
+                    string.append(f"Раздел {nums[0]}.")
+                if len(nums) >= 2:
+                    string.append(f"Часть {nums[1]}.")
+                if len(nums) >= 3:
+                    string.append(f"Книга {nums[2]}.")
+            else:
+                if len(nums) >= 2:
+                    string.append(f"Раздел {nums[0]}. Подраздел {nums[1]}.")
+                if len(nums) >= 3:
+                    string.append(f"Часть {nums[2]}.")
+                if len(nums) >= 4:
+                    string.append(f"Книга {nums[3]}.")
+            kostilb = re.split("\.\s", list_cycle[2], maxsplit=1)
+            string.append(kostilb[-1]) # Наименование части
+            string.append(list_cycle[1]) # Обозначение
+            matrix.append(string)
 
 
-
-# import re
-# from docx import Document
-#
-# document = Document("Обеденное меню 777.docx")
-#
-# # Регулярка для поиска последовательностей пробелов: от двух подряд и более
-# multi_space_pattern = re.compile(r'\s{2,}')
-#
-# for table in document.tables:
-#     for row in table.rows:
-#         name, weight, price = [multi_space_pattern.sub(' ', i.text.strip()) for i in row.cells]
-#
-#         if name == weight == price or (not weight or not price):
-#             print()
-#             name = name.title()
-#             print(name)
-#             continue
-#
-#         print('{} {} {}'.format(name, weight, price))
-#
-#     # Таблицы в меню дублируются
-#     break
+for row in matrix:
+    for cell in row:
+        print(f"||{cell}||", end="\t")
+    print()
