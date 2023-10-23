@@ -244,6 +244,19 @@ class Ui_MainWindow(object):
         self.RightBlock.addLayout(self.RadioButtons)
         spacerItem1 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.RightBlock.addItem(spacerItem1)
+
+        self.buttonImport = QtWidgets.QPushButton(self.centralwidget)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.buttonImport.sizePolicy().hasHeightForWidth())
+        self.buttonImport.setSizePolicy(sizePolicy)
+        self.buttonImport.setMinimumSize(QtCore.QSize(110, 40))
+        self.buttonImport.setMaximumSize(QtCore.QSize(16777215, 40))
+        self.buttonImport.setContextMenuPolicy(QtCore.Qt.ActionsContextMenu)
+        self.buttonImport.setObjectName("buttonImport")
+        self.RightBlock.addWidget(self.buttonImport)
+
         self.buttonGenerate = QtWidgets.QPushButton(self.centralwidget)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
@@ -255,6 +268,7 @@ class Ui_MainWindow(object):
         self.buttonGenerate.setContextMenuPolicy(QtCore.Qt.ActionsContextMenu)
         self.buttonGenerate.setObjectName("buttonGenerate")
         self.RightBlock.addWidget(self.buttonGenerate)
+
         self.buttonEdit = QtWidgets.QPushButton(self.centralwidget)
         self.buttonEdit.setMinimumSize(QtCore.QSize(0, 40))
         self.buttonEdit.setMaximumSize(QtCore.QSize(16777215, 40))
@@ -296,6 +310,8 @@ class Ui_MainWindow(object):
 "документация"))
         self.radioButton_RD.setText(_translate("MainWindow", "Рабочая \n"
 "документация"))
+        self.buttonImport.setText(_translate("MainWindow", "Загрузить из\n"
+"состава проекта"))
         self.buttonGenerate.setText(_translate("MainWindow", "Сгенерировать \n"
 "файлы"))
         self.buttonEdit.setText(_translate("MainWindow", "Редактировать \n"
