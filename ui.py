@@ -115,6 +115,7 @@ class Ui_MainWindow(object):
         self.lineEditCustomer.setMaximumSize(QtCore.QSize(16777215, 24))
         self.lineEditCustomer.setObjectName("lineEditCustomer")
         self.gridLayout.addWidget(self.lineEditCustomer, 1, 1, 1, 6)
+
         self.labelContract = QtWidgets.QLabel(self.centralwidget)
         font = QtGui.QFont()
         font.setFamily("MS Shell Dlg 2")
@@ -132,7 +133,27 @@ class Ui_MainWindow(object):
         self.lineEditContract.setMaximumSize(QtCore.QSize(16777215, 24))
         self.lineEditContract.setObjectName("lineEditContract")
         self.lineEditContract.setPlaceholderText('от "01" января 2000 г.')
-        self.gridLayout.addWidget(self.lineEditContract, 2, 1, 1, 6)
+        self.gridLayout.addWidget(self.lineEditContract, 2, 1, 1, 3)
+
+        self.labelCipher = QtWidgets.QLabel(self.centralwidget)
+        font = QtGui.QFont()
+        font.setFamily("MS Shell Dlg 2")
+        font.setPointSize(9)
+        self.labelCipher.setFont(font)
+        self.labelCipher.setObjectName("labelContract")
+        self.gridLayout.addWidget(self.labelCipher, 2, 4, 1, 1)
+
+        self.lineEditCipher = QtWidgets.QLineEdit(self.centralwidget)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Maximum)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.lineEditCipher.sizePolicy().hasHeightForWidth())
+        self.lineEditCipher.setSizePolicy(sizePolicy)
+        self.lineEditCipher.setMinimumSize(QtCore.QSize(0, 24))
+        self.lineEditCipher.setMaximumSize(QtCore.QSize(16777215, 24))
+        self.lineEditCipher.setObjectName("lineEditContract")
+        self.gridLayout.addWidget(self.lineEditCipher, 2, 5, 1, 2)
+
         self.labelProject = QtWidgets.QLabel(self.centralwidget)
         font = QtGui.QFont()
         font.setFamily("MS Shell Dlg 2")
@@ -304,6 +325,7 @@ class Ui_MainWindow(object):
         self.labelCountWorker.setText(_translate("MainWindow", "Количество исполнителей:"))
         self.labelCustomer.setText(_translate("MainWindow", "Заказчик:"))
         self.labelContract.setText(_translate("MainWindow", "Договор:"))
+        self.labelCipher.setText(_translate("MainWindow", "Шифр проекта:"))
         self.labelProject.setText(_translate("MainWindow", "Название \n"
 "проекта:"))
         self.radioButton_PD.setText(_translate("MainWindow", "Проектная \n"

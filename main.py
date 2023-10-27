@@ -32,7 +32,7 @@ class window(QtWidgets.QMainWindow):
         self.ui.buttonGenerate.clicked.connect(self.generate)
         self.ui.buttonFolder.clicked.connect(self.go_to_folder)
         self.ui.buttonImport.clicked.connect(self.import_from_word)
-        self.ui.buttonSave.clicked.connect(self.save)
+        self.ui.buttonSave.clicked.connect(lambda: self.save(True))
         self.ui.buttonLoad.clicked.connect(self.load)
         self.ui.buttonDrop.clicked.connect(lambda: self.drop(True))
         self.ui.buttonEdit.clicked.connect(self.show_window_edit)
@@ -110,90 +110,91 @@ class window(QtWidgets.QMainWindow):
 
     def import_from_word(self):
         word = QFileDialog.getOpenFileName(self, 'Выбрать файл', filter='*.docx , *.doc')
-        document = Document(word[0])
-        with open('config.json', 'r') as f:
-            data_save = load(f)
-        matrix = []
-        multi_space_pattern = compile(r' ')
-        for table in document.tables:
-            for row in table.rows:
-                list_cycle = []
-                string = []
-                for i in row.cells:
-                    name = multi_space_pattern.sub(' ', i.text.strip())
-                    list_cycle.append(name)
-                if match("\d", list_cycle[0]):  # 5.1.3
-                    nums = split("\.", list_cycle[0], maxsplit=3)  # ['1', '1']
-                    if int(nums[0]) != 5 and int(nums[0]) != 13:
-                        if len(nums) == 1:
-                            string.append(f"Раздел {nums[0]}.")
-                            string.append("")
-                            string.append("")
-                        elif len(nums) == 2:
-                            string.append(f"Раздел {nums[0]}.")
-                            string.append(f"Часть {nums[1]}")
-                            string.append("")
-                        elif len(nums) == 3:
-                            string.append(f"Раздел {nums[0]}.")
-                            string.append(f"Часть {nums[1]}")
-                            string.append(f"Книга {nums[2]}")
-                    elif int(nums[0]) == 13:
+        if word[0] != '':
+            document = Document(word[0])
+            with open('config.json', 'r') as f:
+                data_save = load(f)
+            matrix = []
+            multi_space_pattern = compile(r' ')
+            for table in document.tables:
+                for row in table.rows:
+                    list_cycle = []
+                    string = []
+                    for i in row.cells:
+                        name = multi_space_pattern.sub(' ', i.text.strip())
+                        list_cycle.append(name)
+                    if match("\d", list_cycle[0]):  # 5.1.3
+                        nums = split("\.", list_cycle[0], maxsplit=3)  # ['1', '1']
+                        if int(nums[0]) != 5 and int(nums[0]) != 13:
+                            if len(nums) == 1:
+                                string.append(f"Раздел {nums[0]}.")
+                                string.append("")
+                                string.append("")
+                            elif len(nums) == 2:
+                                string.append(f"Раздел {nums[0]}.")
+                                string.append(f"Часть {nums[1]}")
+                                string.append("")
+                            elif len(nums) == 3:
+                                string.append(f"Раздел {nums[0]}.")
+                                string.append(f"Часть {nums[1]}")
+                                string.append(f"Книга {nums[2]}")
+                        elif int(nums[0]) == 13:
+                            break
+                        else:
+                            if len(nums) == 2:
+                                string.append(f"Раздел {nums[0]}. Подраздел {nums[1]}.")
+                                string.append("")
+                                string.append("")
+                            elif len(nums) == 3:
+                                string.append(f"Раздел {nums[0]}. Подраздел {nums[1]}.")
+                                string.append(f"Часть {nums[2]}")
+                                string.append("")
+                            elif len(nums) == 4:
+                                string.append(f"Раздел {nums[0]}. Подраздел {nums[1]}.")
+                                string.append(f"Часть {nums[2]}")
+                                string.append(f"Книга {nums[3]}")
+                        kostilb = split("\.\s", list_cycle[2], maxsplit=1)
+                        string.append(kostilb[-1])  # Наименование части
+                        string.append("")
+                        string.append(list_cycle[1])  # Обозначение
+                        matrix.append(string)
+            for row in matrix:
+                for cell in row:
+                    print(cell, end="\t")
+                print()
+            self.loadTablePD()
+            for row in range(len(matrix)):
+                self.ui.tableWidget.insertRow(self.ui.tableWidget.rowCount())
+                combo_box5 = custom_combo_box()
+                combo_box5.addItems(data_save["Раздел"])
+                self.ui.tableWidget.setCellWidget(row, 0, combo_box5)
+                for chapter in range(len(data_save["Раздел"])):
+                    if findall(pattern= str(matrix[row][0]), string= str(data_save["Раздел"][chapter])):
+                        combo_box5.setCurrentText(data_save["Раздел"][chapter])
                         break
-                    else:
-                        if len(nums) == 2:
-                            string.append(f"Раздел {nums[0]}. Подраздел {nums[1]}.")
-                            string.append("")
-                            string.append("")
-                        elif len(nums) == 3:
-                            string.append(f"Раздел {nums[0]}. Подраздел {nums[1]}.")
-                            string.append(f"Часть {nums[2]}")
-                            string.append("")
-                        elif len(nums) == 4:
-                            string.append(f"Раздел {nums[0]}. Подраздел {nums[1]}.")
-                            string.append(f"Часть {nums[2]}")
-                            string.append(f"Книга {nums[3]}")
-                    kostilb = split("\.\s", list_cycle[2], maxsplit=1)
-                    string.append(kostilb[-1])  # Наименование части
-                    string.append("")
-                    string.append(list_cycle[1])  # Обозначение
-                    matrix.append(string)
-        for row in matrix:
-            for cell in row:
-                print(cell, end="\t")
-            print()
-        self.loadTablePD()
-        for row in range(len(matrix)):
-            self.ui.tableWidget.insertRow(self.ui.tableWidget.rowCount())
-            combo_box5 = custom_combo_box()
-            combo_box5.addItems(data_save["Раздел"])
-            self.ui.tableWidget.setCellWidget(row, 0, combo_box5)
-            for chapter in range(len(data_save["Раздел"])):
-                if findall(pattern= str(matrix[row][0]), string= str(data_save["Раздел"][chapter])):
-                    combo_box5.setCurrentText(data_save["Раздел"][chapter])
-                    break
-            combo_box5 = custom_combo_box()
-            combo_box5.addItems(data_save["Номер части"])
-            self.ui.tableWidget.setCellWidget(row, 1, combo_box5)
-            if matrix[row][1] not in data_save["Номер части"]:
-                combo_box5.addItem(matrix[row][1])
-            combo_box5.setCurrentText(matrix[row][1])
+                combo_box5 = custom_combo_box()
+                combo_box5.addItems(data_save["Номер части"])
+                self.ui.tableWidget.setCellWidget(row, 1, combo_box5)
+                if matrix[row][1] not in data_save["Номер части"]:
+                    combo_box5.addItem(matrix[row][1])
+                combo_box5.setCurrentText(matrix[row][1])
 
-            combo_box5 = custom_combo_box()
-            combo_box5.addItems(data_save["Номер книги"])
-            self.ui.tableWidget.setCellWidget(row, 2, combo_box5)
-            if matrix[row][2] not in data_save["Номер книги"]:
-                combo_box5.addItem(matrix[row][2])
-            combo_box5.setCurrentText(matrix[row][2])
+                combo_box5 = custom_combo_box()
+                combo_box5.addItems(data_save["Номер книги"])
+                self.ui.tableWidget.setCellWidget(row, 2, combo_box5)
+                if matrix[row][2] not in data_save["Номер книги"]:
+                    combo_box5.addItem(matrix[row][2])
+                combo_box5.setCurrentText(matrix[row][2])
 
-            combo_box5 = custom_combo_box()
-            combo_box5.addItems(data_save["Название части"])
-            self.ui.tableWidget.setCellWidget(row, 3, combo_box5)
-            if matrix[row][3] not in data_save["Название части"]:
-                combo_box5.addItem(matrix[row][3])
-            combo_box5.setCurrentText(matrix[row][3])
+                combo_box5 = custom_combo_box()
+                combo_box5.addItems(data_save["Название части"])
+                self.ui.tableWidget.setCellWidget(row, 3, combo_box5)
+                if matrix[row][3] not in data_save["Название части"]:
+                    combo_box5.addItem(matrix[row][3])
+                combo_box5.setCurrentText(matrix[row][3])
 
-            self.ui.tableWidget.setItem(row, 4, QtWidgets.QTableWidgetItem(matrix[row][4]))
-            self.ui.tableWidget.setItem(row, 5, QtWidgets.QTableWidgetItem(matrix[row][5]))
+                self.ui.tableWidget.setItem(row, 4, QtWidgets.QTableWidgetItem(matrix[row][4]))
+                self.ui.tableWidget.setItem(row, 5, QtWidgets.QTableWidgetItem(matrix[row][5]))
     def generate(self):
         rowCount = self.ui.tableWidget.rowCount()
         rowCount2 = self.ui.tableWidget_2.rowCount()
@@ -213,6 +214,7 @@ class window(QtWidgets.QMainWindow):
             projectList.append(self.ui.lineEditProject.text())  # Добавляем название объекта projectList[2]
             projectList.append(self.ui.lineEditLetter.text())  # Добавляем номер выписки projectList[3]
             projectList.append(self.ui.lineEditDateLetter.text())  # Добавляем дату выписки projectList[4]
+            projectList.append(self.ui.lineEditCipher.text()) # Добавляем шифр проекта projectList[5]
             data_save = str(datetime.fromtimestamp(time()))
             for o in range(rowCount2):
                 for j in range(self.ui.tableWidget_2.columnCount()):
@@ -258,24 +260,34 @@ class window(QtWidgets.QMainWindow):
                         except AttributeError:  # обработка пустых полей
                             table.append("")
                 if flag_folder:
-                    if projectList[2] == "":
-                        error('Название объекта не указано!')
+                    if projectList[5] == "":
+                        error('Не указан шифр проекта!')
                         return
                     else:
                         if columnCount == 6:
-                            if len(projectList[2]) > 80:
-                                os.makedirs(os.path.join(path, f"ПД_{projectList[2][0:80]}"), exist_ok=True)
-                                path += f"/ПД_{projectList[2][0:80]}"
-                            else:
-                                os.makedirs(os.path.join(path, f"ПД_{projectList[2]}"), exist_ok=True)
-                                path += f"/ПД_{projectList[2]}"
+                            os.makedirs(os.path.join(path, f"ПД_{projectList[5]}"), exist_ok=True)
+                            path += f"/ПД_{projectList[5]}"
                         else:
-                            if len(projectList[2]) > 80:
-                                os.makedirs(os.path.join(path, f"РД_{projectList[2][0:80]}"), exist_ok=True)
-                                path += f"/РД_{projectList[2][0:80]}"
-                            else:
-                                os.makedirs(os.path.join(path, f"РД_{projectList[2]}"), exist_ok=True)
-                                path += f"/РД_{projectList[2]}"
+                            os.makedirs(os.path.join(path, f"РД_{projectList[5]}"), exist_ok=True)
+                            path += f"/РД_{projectList[5]}"
+                    # if projectList[2] == "":
+                    #     error('Название объекта не указано!')
+                    #     return
+                    # else:
+                    #     if columnCount == 6:
+                    #         if len(projectList[2]) > 80:
+                    #             os.makedirs(os.path.join(path, f"ПД_{projectList[2][0:80]}"), exist_ok=True)
+                    #             path += f"/ПД_{projectList[2][0:80]}"
+                    #         else:
+                    #             os.makedirs(os.path.join(path, f"ПД_{projectList[2]}"), exist_ok=True)
+                    #             path += f"/ПД_{projectList[2]}"
+                    #     else:
+                    #         if len(projectList[2]) > 80:
+                    #             os.makedirs(os.path.join(path, f"РД_{projectList[2][0:80]}"), exist_ok=True)
+                    #             path += f"/РД_{projectList[2][0:80]}"
+                    #         else:
+                    #             os.makedirs(os.path.join(path, f"РД_{projectList[2]}"), exist_ok=True)
+                    #             path += f"/РД_{projectList[2]}"
                 print(table)
                 print(split1)
                 if columnCount == 6 and table[ii * 6][0:8] == "Раздел 5":
@@ -291,12 +303,11 @@ class window(QtWidgets.QMainWindow):
                 elif self.ui.comboBoxOrg.currentText() == "ООО ГиА":
                     doc.replace_pic("GA.png", "templates/GIA.png")
                     org = "«Гинзбург и Архитекторы»"
-                projectList.append(org)              # Добавляем название организации projectList[5]
-                projectList.append(data_save[0:19])  # Добавляем дату сохранения файла projectList[6]
+                projectList.append(org)              # Добавляем название организации projectList[6]
                 if columnCount == 6:
                     print(table[ii * 6][0:8])
                     if table[ii * 6][0:8] == "Раздел 5":
-                        context = {"organization": projectList[5], "letter": projectList[3], "dateLetter": projectList[4],
+                        context = {"organization": projectList[6], "letter": projectList[3], "dateLetter": projectList[4],
                                    "customer": projectList[0], "contract": projectList[1],
                                    "projectName": projectList[2],
                                    "chapterNum": split1[ii][0], "subsectionNum": split1[ii][1],
@@ -307,7 +318,7 @@ class window(QtWidgets.QMainWindow):
                                    "role3": workerList[4], "name3": workerList[5], "role4": workerList[6],
                                    "name4": workerList[7]}
                     else:
-                        context = {"organization": projectList[5], "letter": projectList[3], "dateLetter": projectList[4],
+                        context = {"organization": projectList[6], "letter": projectList[3], "dateLetter": projectList[4],
                                    "customer": projectList[0], "contract": projectList[1],
                                    "projectName": projectList[2],
                                    "chapterNum": split1[ii][0], "chapterName": split1[ii][1],
@@ -318,7 +329,7 @@ class window(QtWidgets.QMainWindow):
                                    "role3": workerList[4], "name3": workerList[5], "role4": workerList[6],
                                    "name4": workerList[7]}
                 else:
-                    context = {"organization": projectList[5], "letter": projectList[3], "dateLetter": projectList[4],
+                    context = {"organization": projectList[6], "letter": projectList[3], "dateLetter": projectList[4],
                                "customer": projectList[0], "contract": projectList[1],
                                "projectName": projectList[2],
                                "chapterName": table[ii * 2], "mark": table[ii * 2 + 1],
@@ -386,7 +397,7 @@ class window(QtWidgets.QMainWindow):
         widget.setWindowTitle("Загрузить")
         widget.setWindowIcon(QtGui.QIcon("img/320842.png"))
         ui.tableWidget.setColumnCount(2)
-        ui.tableWidget.setHorizontalHeaderLabels(("Наименование объекта", "Дата сохранения"))
+        ui.tableWidget.setHorizontalHeaderLabels(("Шифр проекта", "Дата сохранения"))
         ui.tableWidget.resizeColumnsToContents()
         ui.tableWidget.resizeRowsToContents()
         ui.tableWidget.horizontalHeader().setStretchLastSection(True)
@@ -540,7 +551,12 @@ class window(QtWidgets.QMainWindow):
                 with open('saves.json', 'r') as f:
                     data = load(f)
                 self.drop(False)
-                self.ui.comboBoxOrg.setCurrentText(data[f'{table}'][f'{save_name}']['projectList'][5])
+                if len(data[f'{table}'][f'{save_name}']['projectList']) == 7:
+                    self.ui.comboBoxOrg.setCurrentText(data[f'{table}'][f'{save_name}']['projectList'][6])
+                    self.ui.lineEditCipher.setText(data[f'{table}'][f'{save_name}']['projectList'][5])
+                else:
+                    self.ui.comboBoxOrg.setCurrentText(data[f'{table}'][f'{save_name}']['projectList'][5])
+                    self.ui.lineEditCipher.setText("")
                 self.ui.lineEditLetter.setText(data[f'{table}'][f'{save_name}']['projectList'][3])
                 self.ui.lineEditDateLetter.setText(data[f'{table}'][f'{save_name}']['projectList'][4])
                 self.ui.lineEditCustomer.setText(data[f'{table}'][f'{save_name}']['projectList'][0])
@@ -619,11 +635,11 @@ class window(QtWidgets.QMainWindow):
         ui.pushButtonCancel.clicked.connect(save_cancel)
         ui.tableWidget.itemDoubleClicked.connect(load_save)
         widget.exec_()
-    def save(self, flag=True):
+    def save(self, flag):
         rowCount = self.ui.tableWidget.rowCount()
         rowCount2 = self.ui.tableWidget_2.rowCount()
-        if self.ui.lineEditProject.text() == '':
-            error('Название объекта не указано!')
+        if self.ui.lineEditCipher.text() == '':
+            error('Шифр проекта не указан!')
         elif rowCount == 0:
             error("Разделы не выбраны!")
         elif rowCount2 == 0:
@@ -635,7 +651,8 @@ class window(QtWidgets.QMainWindow):
             projectList.append(self.ui.lineEditProject.text())  # Добавляем название объекта
             projectList.append(self.ui.lineEditLetter.text())  # Добавляем номер выписки
             projectList.append(self.ui.lineEditDateLetter.text())  # Добавляем дату выписки
-            projectList.append(self.ui.comboBoxOrg.currentText())
+            projectList.append(self.ui.lineEditCipher.text()) # Добавляем шифр проекта
+            projectList.append(self.ui.comboBoxOrg.currentText()) # Добавлаяем организацию
             for o in range(self.ui.tableWidget_2.rowCount()):
                 for j in range(self.ui.tableWidget_2.columnCount()):
                     if j == 0:
@@ -672,7 +689,7 @@ class window(QtWidgets.QMainWindow):
                 data = load(f)
             data_save = str(datetime.fromtimestamp(time()))
             if self.ui.radioButton_PD.isChecked():
-                data["Проектная документация"][f'{projectList[2]}'] = \
+                data["Проектная документация"][f'{projectList[5]}'] = \
                 {
                     "table": table,
                     "projectList": projectList,
@@ -680,7 +697,7 @@ class window(QtWidgets.QMainWindow):
                     "save_time": data_save[0:19]
                 }
             else:
-                data["Рабочая документация"][f'{projectList[2]}'] = \
+                data["Рабочая документация"][f'{projectList[5]}'] = \
                     {
                         "table": table,
                         "projectList": projectList,
@@ -729,6 +746,7 @@ class window(QtWidgets.QMainWindow):
                 self.ui.lineEditLetter.clear()
                 self.ui.lineEditProject.clear()
                 self.ui.lineEditContract.clear()
+                self.ui.lineEditCipher.clear()
                 self.ui.comboBoxOrg.setCurrentText("ООО ГА")
                 self.ui.spinBox.setValue(0)
             else:
