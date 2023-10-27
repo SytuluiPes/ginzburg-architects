@@ -116,6 +116,7 @@ class window(QtWidgets.QMainWindow):
                 data_save = load(f)
             matrix = []
             multi_space_pattern = compile(r' ')
+            chapter_counter = 0
             for table in document.tables:
                 for row in table.rows:
                     list_cycle = []
@@ -125,47 +126,53 @@ class window(QtWidgets.QMainWindow):
                         list_cycle.append(name)
                     if match("\d", list_cycle[0]):  # 5.1.3
                         nums = split("\.", list_cycle[0], maxsplit=3)  # ['1', '1']
-                        if int(nums[0]) != 5 and int(nums[0]) != 13:
-                            if len(nums) == 1:
-                                string.append(f"Раздел {nums[0]}.")
-                                string.append("")
-                                string.append("")
-                            elif len(nums) == 2:
-                                string.append(f"Раздел {nums[0]}.")
-                                string.append(f"Часть {nums[1]}")
-                                string.append("")
-                            elif len(nums) == 3:
-                                string.append(f"Раздел {nums[0]}.")
-                                string.append(f"Часть {nums[1]}")
-                                string.append(f"Книга {nums[2]}")
-                        elif int(nums[0]) == 13:
-                            break
-                        else:
-                            if len(nums) == 2:
-                                string.append(f"Раздел {nums[0]}. Подраздел {nums[1]}.")
-                                string.append("")
-                                string.append("")
-                            elif len(nums) == 3:
-                                string.append(f"Раздел {nums[0]}. Подраздел {nums[1]}.")
-                                string.append(f"Часть {nums[2]}")
-                                string.append("")
-                            elif len(nums) == 4:
-                                string.append(f"Раздел {nums[0]}. Подраздел {nums[1]}.")
-                                string.append(f"Часть {nums[2]}")
-                                string.append(f"Книга {nums[3]}")
-                        kostilb = split("\.\s", list_cycle[2], maxsplit=1)
-                        string.append(kostilb[-1])  # Наименование части
-                        string.append("")
-                        string.append(list_cycle[1])  # Обозначение
-                        matrix.append(string)
+                        if int(nums[0]) >= chapter_counter:
+                            chapter_counter = int(nums[0])
+                            if int(nums[0]) != 5 and int(nums[0]) != 13:
+                                if len(nums) == 1:
+                                    string.append(f"Раздел {nums[0]}.")
+                                    string.append("")
+                                    string.append("")
+                                elif len(nums) == 2:
+                                    string.append(f"Раздел {nums[0]}.") #
+                                    string.append(f"Часть {nums[1]}")
+                                    string.append("")
+                                elif len(nums) == 3:
+                                    string.append(f"Раздел {nums[0]}.")
+                                    string.append(f"Часть {nums[1]}")
+                                    string.append(f"Книга {nums[2]}")
+                            elif int(nums[0]) == 13:
+                                break
+                            else:
+                                if len(nums) == 2:
+                                    string.append(f"Раздел {nums[0]}. Подраздел {nums[1]}.")
+                                    string.append("")
+                                    string.append("")
+                                elif len(nums) == 3:
+                                    string.append(f"Раздел {nums[0]}. Подраздел {nums[1]}.")
+                                    string.append(f"Часть {nums[2]}")
+                                    string.append("")
+                                elif len(nums) == 4:
+                                    string.append(f"Раздел {nums[0]}. Подраздел {nums[1]}.")
+                                    string.append(f"Часть {nums[2]}")
+                                    string.append(f"Книга {nums[3]}")
+                            kostilb = split("\.\s", list_cycle[2], maxsplit=1)
+                            string.append(kostilb[-1])  # Наименование части
+                            string.append("")
+                            string.append(list_cycle[1])  # Обозначение
+                            matrix.append(string)
             for row in matrix:
                 for cell in row:
                     print(cell, end="\t")
+                print(len(row), end="")
                 print()
             self.loadTablePD()
             for row in range(len(matrix)):
+                print(row)
+                print(matrix[row])
                 self.ui.tableWidget.insertRow(self.ui.tableWidget.rowCount())
                 combo_box5 = custom_combo_box()
+                combo_box5.setEditable(True)
                 combo_box5.addItems(data_save["Раздел"])
                 self.ui.tableWidget.setCellWidget(row, 0, combo_box5)
                 for chapter in range(len(data_save["Раздел"])):
@@ -173,6 +180,7 @@ class window(QtWidgets.QMainWindow):
                         combo_box5.setCurrentText(data_save["Раздел"][chapter])
                         break
                 combo_box5 = custom_combo_box()
+                combo_box5.setEditable(True)
                 combo_box5.addItems(data_save["Номер части"])
                 self.ui.tableWidget.setCellWidget(row, 1, combo_box5)
                 if matrix[row][1] not in data_save["Номер части"]:
@@ -180,6 +188,7 @@ class window(QtWidgets.QMainWindow):
                 combo_box5.setCurrentText(matrix[row][1])
 
                 combo_box5 = custom_combo_box()
+                combo_box5.setEditable(True)
                 combo_box5.addItems(data_save["Номер книги"])
                 self.ui.tableWidget.setCellWidget(row, 2, combo_box5)
                 if matrix[row][2] not in data_save["Номер книги"]:
@@ -187,6 +196,7 @@ class window(QtWidgets.QMainWindow):
                 combo_box5.setCurrentText(matrix[row][2])
 
                 combo_box5 = custom_combo_box()
+                combo_box5.setEditable(True)
                 combo_box5.addItems(data_save["Название части"])
                 self.ui.tableWidget.setCellWidget(row, 3, combo_box5)
                 if matrix[row][3] not in data_save["Название части"]:
@@ -569,6 +579,7 @@ class window(QtWidgets.QMainWindow):
                         if item % 2 == 0:
                             self.ui.tableWidget_2.insertRow(self.ui.tableWidget_2.rowCount())
                             combo_box5 = custom_combo_box()
+                            combo_box5.setEditable(True)
                             combo_box5.addItems(data_save["Должность"])
                             self.ui.tableWidget_2.setCellWidget(item // 2, 0, combo_box5)
                             if data[f'{table}'][f'{save_name}']['workerList'][item] not in data_save["Должность"]:
@@ -586,6 +597,7 @@ class window(QtWidgets.QMainWindow):
                         if item % 6 == 0:
                             self.ui.tableWidget.insertRow(self.ui.tableWidget.rowCount())
                             combo_box5 = custom_combo_box()
+                            combo_box5.setEditable(True)
                             combo_box5.addItems(data_save["Раздел"])
                             self.ui.tableWidget.setCellWidget(item // 6, 0, combo_box5)
                             if data[f'{table}'][f'{save_name}']['table'][item] not in data_save["Раздел"]:
@@ -593,6 +605,7 @@ class window(QtWidgets.QMainWindow):
                             combo_box5.setCurrentText(data[f'{table}'][f'{save_name}']['table'][item])
                         elif item % 6 == 1:
                             combo_box5 = custom_combo_box()
+                            combo_box5.setEditable(True)
                             combo_box5.addItems(data_save["Номер части"])
                             self.ui.tableWidget.setCellWidget(item // 6, 1, combo_box5)
                             if data[f'{table}'][f'{save_name}']['table'][item] not in data_save["Номер части"]:
@@ -600,6 +613,7 @@ class window(QtWidgets.QMainWindow):
                             combo_box5.setCurrentText(data[f'{table}'][f'{save_name}']['table'][item])
                         elif item % 6 == 2:
                             combo_box5 = custom_combo_box()
+                            combo_box5.setEditable(True)
                             combo_box5.addItems(data_save["Номер книги"])
                             self.ui.tableWidget.setCellWidget(item // 6, 2, combo_box5)
                             if data[f'{table}'][f'{save_name}']['table'][item] not in data_save["Номер книги"]:
@@ -607,6 +621,7 @@ class window(QtWidgets.QMainWindow):
                             combo_box5.setCurrentText(data[f'{table}'][f'{save_name}']['table'][item])
                         elif item % 6 == 3:
                             combo_box5 = custom_combo_box()
+                            combo_box5.setEditable(True)
                             combo_box5.addItems(data_save["Название части"])
                             self.ui.tableWidget.setCellWidget(item // 6, 3, combo_box5)
                             if data[f'{table}'][f'{save_name}']['table'][item] not in data_save["Название части"]:

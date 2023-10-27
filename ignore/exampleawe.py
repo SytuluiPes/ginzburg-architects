@@ -119,42 +119,43 @@
 #     self.ui.tableWidget.horizontalHeader().setSectionResizeMode(QHeaderView.Interactive)
 #     self.ui.tableWidget.horizontalHeader().setStretchLastSection(True)
 #     self.ui.tableWidget.setColumnWidth(0, 700)
-import re
-from docx import Document
+# import re
+# from docx import Document
+#
+# document = Document("exam.docx")
+# matrix = []
+# multi_space_pattern = re.compile(r' ')
+# for table in document.tables:
+#     for row in table.rows:
+#         list_cycle = []
+#         string = []
+#         for i in row.cells:
+#             name = multi_space_pattern.sub(' ', i.text.strip())
+#             list_cycle.append(name)
+#         if re.match("\d",list_cycle[0]): # 5.1.3
+#             nums = re.split("\.", list_cycle[0], maxsplit=3) # ['1', '1']
+#             if int(nums[0]) not in [5, 13]:
+#                 if len(nums) >= 1:
+#                     string.append(f"Раздел {nums[0]}.")
+#                 if len(nums) >= 2:
+#                     string.append(f"Часть {nums[1]}.")
+#                 if len(nums) >= 3:
+#                     string.append(f"Книга {nums[2]}.")
+#             else:
+#                 if len(nums) >= 2:
+#                     string.append(f"Раздел {nums[0]}. Подраздел {nums[1]}.")
+#                 if len(nums) >= 3:
+#                     string.append(f"Часть {nums[2]}.")
+#                 if len(nums) >= 4:
+#                     string.append(f"Книга {nums[3]}.")
+#             kostilb = re.split("\.\s", list_cycle[2], maxsplit=1)
+#             string.append(kostilb[-1]) # Наименование части
+#             string.append(list_cycle[1]) # Обозначение
+#             matrix.append(string)
+#
+#
+# for row in matrix:
+#     for cell in row:
+#         print(f"||{cell}||", end="\t")
+#     print()
 
-document = Document("exam.docx")
-matrix = []
-multi_space_pattern = re.compile(r' ')
-for table in document.tables:
-    for row in table.rows:
-        list_cycle = []
-        string = []
-        for i in row.cells:
-            name = multi_space_pattern.sub(' ', i.text.strip())
-            list_cycle.append(name)
-        if re.match("\d",list_cycle[0]): # 5.1.3
-            nums = re.split("\.", list_cycle[0], maxsplit=3) # ['1', '1']
-            if int(nums[0]) not in [5, 13]:
-                if len(nums) >= 1:
-                    string.append(f"Раздел {nums[0]}.")
-                if len(nums) >= 2:
-                    string.append(f"Часть {nums[1]}.")
-                if len(nums) >= 3:
-                    string.append(f"Книга {nums[2]}.")
-            else:
-                if len(nums) >= 2:
-                    string.append(f"Раздел {nums[0]}. Подраздел {nums[1]}.")
-                if len(nums) >= 3:
-                    string.append(f"Часть {nums[2]}.")
-                if len(nums) >= 4:
-                    string.append(f"Книга {nums[3]}.")
-            kostilb = re.split("\.\s", list_cycle[2], maxsplit=1)
-            string.append(kostilb[-1]) # Наименование части
-            string.append(list_cycle[1]) # Обозначение
-            matrix.append(string)
-
-
-for row in matrix:
-    for cell in row:
-        print(f"||{cell}||", end="\t")
-    print()
