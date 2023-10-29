@@ -109,6 +109,8 @@ class window(QtWidgets.QMainWindow):
         self.ui.tableWidget.setColumnWidth(0, 700)
 
     def import_from_word(self):
+        start_time = time()
+        print(start_time)
         word = QFileDialog.getOpenFileName(self, 'Выбрать файл', filter='*.docx , *.doc')
         if word[0] != '':
             document = Document(word[0])
@@ -178,6 +180,7 @@ class window(QtWidgets.QMainWindow):
                 for chapter in range(len(data_save["Раздел"])):
                     if findall(pattern= str(matrix[row][0]), string= str(data_save["Раздел"][chapter])):
                         combo_box5.setCurrentText(data_save["Раздел"][chapter])
+                        combo_box5.lineEdit().setCursorPosition(0)
                         break
                 combo_box5 = custom_combo_box()
                 combo_box5.setEditable(True)
@@ -186,6 +189,7 @@ class window(QtWidgets.QMainWindow):
                 if matrix[row][1] not in data_save["Номер части"]:
                     combo_box5.addItem(matrix[row][1])
                 combo_box5.setCurrentText(matrix[row][1])
+                combo_box5.lineEdit().setCursorPosition(0)
 
                 combo_box5 = custom_combo_box()
                 combo_box5.setEditable(True)
@@ -194,7 +198,7 @@ class window(QtWidgets.QMainWindow):
                 if matrix[row][2] not in data_save["Номер книги"]:
                     combo_box5.addItem(matrix[row][2])
                 combo_box5.setCurrentText(matrix[row][2])
-
+                combo_box5.lineEdit().setCursorPosition(0)
                 combo_box5 = custom_combo_box()
                 combo_box5.setEditable(True)
                 combo_box5.addItems(data_save["Название части"])
@@ -202,9 +206,11 @@ class window(QtWidgets.QMainWindow):
                 if matrix[row][3] not in data_save["Название части"]:
                     combo_box5.addItem(matrix[row][3])
                 combo_box5.setCurrentText(matrix[row][3])
+                combo_box5.lineEdit().setCursorPosition(0)
 
                 self.ui.tableWidget.setItem(row, 4, QtWidgets.QTableWidgetItem(matrix[row][4]))
                 self.ui.tableWidget.setItem(row, 5, QtWidgets.QTableWidgetItem(matrix[row][5]))
+        print("Время затрачено: ", time() - start_time)
     def generate(self):
         rowCount = self.ui.tableWidget.rowCount()
         rowCount2 = self.ui.tableWidget_2.rowCount()
@@ -240,10 +246,10 @@ class window(QtWidgets.QMainWindow):
                             workerList.append("")
             for o in range(8 - len(workerList)):
                 workerList.append("")
-            for o in range(len(projectList) - 2):  # для всех полей меняем кавычки
-                projectList[o] = sub(r'"', "«", projectList[o], count=1)
-                projectList[o] = sub(r'"', "»", projectList[o], count=1)
-            ################################################################################################## КАВЫЧКИ
+            # for o in range(len(projectList) - 2):  # для всех полей меняем кавычки
+            #     projectList[o] = sub(r'"', "«", projectList[o], count=1)
+            #     projectList[o] = sub(r'"', "»", projectList[o], count=1)
+            # ################################################################################################## КАВЫЧКИ
             for ii in range(rowCount):
                 for j in range(columnCount):
                     if columnCount == 6:
@@ -585,6 +591,7 @@ class window(QtWidgets.QMainWindow):
                             if data[f'{table}'][f'{save_name}']['workerList'][item] not in data_save["Должность"]:
                                 combo_box5.addItem(data[f'{table}'][f'{save_name}']['workerList'][item])
                             combo_box5.setCurrentText(data[f'{table}'][f'{save_name}']['workerList'][item])
+                            combo_box5.lineEdit().setCursorPosition(0)
                         else:
                             self.ui.tableWidget_2.setItem(item // 2, 1, QtWidgets.QTableWidgetItem(
                                 data[f'{table}'][f'{save_name}']['workerList'][item]))
@@ -603,6 +610,7 @@ class window(QtWidgets.QMainWindow):
                             if data[f'{table}'][f'{save_name}']['table'][item] not in data_save["Раздел"]:
                                 combo_box5.addItem(data[f'{table}'][f'{save_name}']['table'][item])
                             combo_box5.setCurrentText(data[f'{table}'][f'{save_name}']['table'][item])
+                            combo_box5.lineEdit().setCursorPosition(0)
                         elif item % 6 == 1:
                             combo_box5 = custom_combo_box()
                             combo_box5.setEditable(True)
@@ -619,6 +627,7 @@ class window(QtWidgets.QMainWindow):
                             if data[f'{table}'][f'{save_name}']['table'][item] not in data_save["Номер книги"]:
                                 combo_box5.addItem(data[f'{table}'][f'{save_name}']['table'][item])
                             combo_box5.setCurrentText(data[f'{table}'][f'{save_name}']['table'][item])
+                            combo_box5.lineEdit().setCursorPosition(0)
                         elif item % 6 == 3:
                             combo_box5 = custom_combo_box()
                             combo_box5.setEditable(True)
@@ -627,6 +636,7 @@ class window(QtWidgets.QMainWindow):
                             if data[f'{table}'][f'{save_name}']['table'][item] not in data_save["Название части"]:
                                 combo_box5.addItem(data[f'{table}'][f'{save_name}']['table'][item])
                             combo_box5.setCurrentText(data[f'{table}'][f'{save_name}']['table'][item])
+                            combo_box5.lineEdit().setCursorPosition(0)
                         elif item % 6 == 4:
                             self.ui.tableWidget.setItem(item // 6, 4, QtWidgets.QTableWidgetItem(
                                 data[f'{table}'][f'{save_name}']['table'][item]))
