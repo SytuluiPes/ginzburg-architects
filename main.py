@@ -109,16 +109,17 @@ class window(QtWidgets.QMainWindow):
         self.ui.tableWidget.setColumnWidth(0, 700)
 
     def import_from_word(self):
-        start_time = time()
-        print(start_time)
         word = QFileDialog.getOpenFileName(self, 'Выбрать файл', filter='*.docx , *.doc')
+        row_iterator = 0
         if word[0] != '':
+            start_time = time()
+            print(start_time)
             document = Document(word[0])
             with open('config.json', 'r') as f:
                 data_save = load(f)
-            matrix = []
             multi_space_pattern = compile(r' ')
             chapter_counter = 0
+            self.loadTablePD()
             for table in document.tables:
                 for row in table.rows:
                     list_cycle = []
@@ -136,7 +137,7 @@ class window(QtWidgets.QMainWindow):
                                     string.append("")
                                     string.append("")
                                 elif len(nums) == 2:
-                                    string.append(f"Раздел {nums[0]}.") #
+                                    string.append(f"Раздел {nums[0]}.")
                                     string.append(f"Часть {nums[1]}")
                                     string.append("")
                                 elif len(nums) == 3:
@@ -162,54 +163,88 @@ class window(QtWidgets.QMainWindow):
                             string.append(kostilb[-1])  # Наименование части
                             string.append("")
                             string.append(list_cycle[1])  # Обозначение
-                            matrix.append(string)
-            for row in matrix:
-                for cell in row:
-                    print(cell, end="\t")
-                print(len(row), end="")
-                print()
-            self.loadTablePD()
-            for row in range(len(matrix)):
-                print(row)
-                print(matrix[row])
-                self.ui.tableWidget.insertRow(self.ui.tableWidget.rowCount())
-                combo_box5 = custom_combo_box()
-                combo_box5.setEditable(True)
-                combo_box5.addItems(data_save["Раздел"])
-                self.ui.tableWidget.setCellWidget(row, 0, combo_box5)
-                for chapter in range(len(data_save["Раздел"])):
-                    if findall(pattern= str(matrix[row][0]), string= str(data_save["Раздел"][chapter])):
-                        combo_box5.setCurrentText(data_save["Раздел"][chapter])
-                        combo_box5.lineEdit().setCursorPosition(0)
-                        break
-                combo_box5 = custom_combo_box()
-                combo_box5.setEditable(True)
-                combo_box5.addItems(data_save["Номер части"])
-                self.ui.tableWidget.setCellWidget(row, 1, combo_box5)
-                if matrix[row][1] not in data_save["Номер части"]:
-                    combo_box5.addItem(matrix[row][1])
-                combo_box5.setCurrentText(matrix[row][1])
-                combo_box5.lineEdit().setCursorPosition(0)
+                            self.ui.tableWidget.insertRow(self.ui.tableWidget.rowCount())
+                            combo_box5 = custom_combo_box()
+                            combo_box5.setEditable(True)
+                            combo_box5.addItems(data_save["Раздел"])
+                            self.ui.tableWidget.setCellWidget(row_iterator, 0, combo_box5)
+                            for chapter in range(len(data_save["Раздел"])):
+                                if findall(pattern=str(string[0]), string=str(data_save["Раздел"][chapter])):
+                                    combo_box5.setCurrentText(data_save["Раздел"][chapter])
+                                    combo_box5.lineEdit().setCursorPosition(0)
+                                    break
+                            combo_box5 = custom_combo_box()
+                            combo_box5.setEditable(True)
+                            combo_box5.addItems(data_save["Номер части"])
+                            self.ui.tableWidget.setCellWidget(row_iterator, 1, combo_box5)
+                            if string[1] not in data_save["Номер части"]:
+                                combo_box5.addItem(string[1])
+                            combo_box5.setCurrentText(string[1])
+                            combo_box5.lineEdit().setCursorPosition(0)
 
-                combo_box5 = custom_combo_box()
-                combo_box5.setEditable(True)
-                combo_box5.addItems(data_save["Номер книги"])
-                self.ui.tableWidget.setCellWidget(row, 2, combo_box5)
-                if matrix[row][2] not in data_save["Номер книги"]:
-                    combo_box5.addItem(matrix[row][2])
-                combo_box5.setCurrentText(matrix[row][2])
-                combo_box5.lineEdit().setCursorPosition(0)
-                combo_box5 = custom_combo_box()
-                combo_box5.setEditable(True)
-                combo_box5.addItems(data_save["Название части"])
-                self.ui.tableWidget.setCellWidget(row, 3, combo_box5)
-                if matrix[row][3] not in data_save["Название части"]:
-                    combo_box5.addItem(matrix[row][3])
-                combo_box5.setCurrentText(matrix[row][3])
-                combo_box5.lineEdit().setCursorPosition(0)
+                            combo_box5 = custom_combo_box()
+                            combo_box5.setEditable(True)
+                            combo_box5.addItems(data_save["Номер книги"])
+                            self.ui.tableWidget.setCellWidget(row_iterator, 2, combo_box5)
+                            if string[2] not in data_save["Номер книги"]:
+                                combo_box5.addItem(string[2])
+                            combo_box5.setCurrentText(string[2])
+                            combo_box5.lineEdit().setCursorPosition(0)
 
-                self.ui.tableWidget.setItem(row, 4, QtWidgets.QTableWidgetItem(matrix[row][4]))
-                self.ui.tableWidget.setItem(row, 5, QtWidgets.QTableWidgetItem(matrix[row][5]))
+                            combo_box5 = custom_combo_box()
+                            combo_box5.setEditable(True)
+                            combo_box5.addItems(data_save["Название части"])
+                            self.ui.tableWidget.setCellWidget(row_iterator, 3, combo_box5)
+                            if string[3] not in data_save["Название части"]:
+                                combo_box5.addItem(string[3])
+                            combo_box5.setCurrentText(string[3])
+                            combo_box5.lineEdit().setCursorPosition(0)
+
+                            self.ui.tableWidget.setItem(row_iterator, 4, QtWidgets.QTableWidgetItem(string[4]))
+                            self.ui.tableWidget.setItem(row_iterator, 5, QtWidgets.QTableWidgetItem(string[5]))
+                            row_iterator += 1
+
+            # for row in range(len(matrix)):
+            #     print(row)
+            #     print(matrix[row])
+            #     self.ui.tableWidget.insertRow(self.ui.tableWidget.rowCount())
+            #     combo_box5 = custom_combo_box()
+            #     combo_box5.setEditable(True)
+            #     combo_box5.addItems(data_save["Раздел"])
+            #     self.ui.tableWidget.setCellWidget(row, 0, combo_box5)
+            #     for chapter in range(len(data_save["Раздел"])):
+            #         if findall(pattern= str(matrix[row][0]), string= str(data_save["Раздел"][chapter])):
+            #             combo_box5.setCurrentText(data_save["Раздел"][chapter])
+            #             combo_box5.lineEdit().setCursorPosition(0)
+            #             break
+            #     combo_box5 = custom_combo_box()
+            #     combo_box5.setEditable(True)
+            #     combo_box5.addItems(data_save["Номер части"])
+            #     self.ui.tableWidget.setCellWidget(row, 1, combo_box5)
+            #     if matrix[row][1] not in data_save["Номер части"]:
+            #         combo_box5.addItem(matrix[row][1])
+            #     combo_box5.setCurrentText(matrix[row][1])
+            #     combo_box5.lineEdit().setCursorPosition(0)
+            #
+            #     combo_box5 = custom_combo_box()
+            #     combo_box5.setEditable(True)
+            #     combo_box5.addItems(data_save["Номер книги"])
+            #     self.ui.tableWidget.setCellWidget(row, 2, combo_box5)
+            #     if matrix[row][2] not in data_save["Номер книги"]:
+            #         combo_box5.addItem(matrix[row][2])
+            #     combo_box5.setCurrentText(matrix[row][2])
+            #     combo_box5.lineEdit().setCursorPosition(0)
+            #     combo_box5 = custom_combo_box()
+            #     combo_box5.setEditable(True)
+            #     combo_box5.addItems(data_save["Название части"])
+            #     self.ui.tableWidget.setCellWidget(row, 3, combo_box5)
+            #     if matrix[row][3] not in data_save["Название части"]:
+            #         combo_box5.addItem(matrix[row][3])
+            #     combo_box5.setCurrentText(matrix[row][3])
+            #     combo_box5.lineEdit().setCursorPosition(0)
+            #
+            #     self.ui.tableWidget.setItem(row, 4, QtWidgets.QTableWidgetItem(matrix[row][4]))
+            #     self.ui.tableWidget.setItem(row, 5, QtWidgets.QTableWidgetItem(matrix[row][5]))
         print("Время затрачено: ", time() - start_time)
     def generate(self):
         rowCount = self.ui.tableWidget.rowCount()
